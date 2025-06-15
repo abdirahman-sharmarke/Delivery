@@ -11,6 +11,21 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Root route
+app.get('/', (req, res) => {
+  res.json({
+    success: true,
+    message: 'Delivery Backend API',
+    version: '1.0.0',
+    endpoints: {
+      health: '/health',
+      api: '/api',
+      documentation: 'See README.md for full API documentation'
+    },
+    status: 'Server is running successfully'
+  });
+});
+
 // Health check
 app.get('/health', (req, res) => {
   res.json({
