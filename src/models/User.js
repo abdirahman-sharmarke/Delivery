@@ -155,4 +155,19 @@ User.findByRole = function(role) {
   return this.findAll({ where: { role } });
 };
 
+// Define associations
+User.associate = function(models) {
+  // User has many orders as customer
+  User.hasMany(models.Order, {
+    as: 'customerOrders',
+    foreignKey: 'customer_id'
+  });
+  
+  // User has many orders as driver
+  User.hasMany(models.Order, {
+    as: 'driverOrders',
+    foreignKey: 'driver_id'
+  });
+};
+
 module.exports = User; 

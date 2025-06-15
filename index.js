@@ -3,6 +3,10 @@ const express = require('express');
 const cors = require('cors');
 const sequelize = require('./src/config/database');
 const userRoutes = require('./src/routes/userRoutes');
+const orderRoutes = require('./src/routes/orderRoutes');
+
+// Initialize models and associations
+require('./src/models/index');
 
 const app = express();
 
@@ -36,6 +40,7 @@ app.get('/health', (req, res) => {
 
 // API routes
 app.use('/api', userRoutes);
+app.use('/api', orderRoutes);
 
 // Start server
 const startServer = async () => {
