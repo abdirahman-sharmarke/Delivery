@@ -1,13 +1,15 @@
 require('dotenv').config();
-const AWS = require('aws-sdk');
+const { S3Client } = require('@aws-sdk/client-s3');
 
 // Configure iDrive S3-compatible storage
-const s3 = new AWS.S3({
+const s3Client = new S3Client({
   endpoint: process.env.IDRIVE_ENDPOINT,
-  accessKeyId: process.env.IDRIVE_ACCESS_KEY,
-  secretAccessKey: process.env.IDRIVE_SECRET_KEY,
-  s3ForcePathStyle: true,
-  signatureVersion: 'v4'
+  credentials: {
+    accessKeyId: process.env.IDRIVE_ACCESS_KEY,
+    secretAccessKey: process.env.IDRIVE_SECRET_KEY,
+  },
+  forcePathStyle: true,
+  region: 'us-east-1' // Required for S3Client
 });
 
-module.exports = s3; 
+module.exports = s3Client; 

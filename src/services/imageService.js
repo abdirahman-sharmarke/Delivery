@@ -1,4 +1,5 @@
-const s3 = require('../config/idrive');
+const s3Client = require('../config/idrive');
+const { PutObjectCommand, DeleteObjectCommand, ListObjectsV2Command } = require('@aws-sdk/client-s3');
 const { v4: uuidv4 } = require('uuid');
 const path = require('path');
 
@@ -71,12 +72,13 @@ class ImageService {
       };
 
       // Upload to iDrive
-      const result = await s3.upload(uploadParams).promise();
+      const command = new PutObjectCommand(uploadParams);
+      const result = await s3Client.send(command);
 
       return {
         success: true,
         fileName: fileName,
-        publicUrl: result.Location,
+        publicUrl: this.getImageUrl(fileName),
         size: file.size,
         mimetype: file.mimetype
       };
@@ -101,7 +103,8 @@ class ImageService {
         Key: fileName
       };
 
-      await s3.deleteObject(deleteParams).promise();
+      const command = new DeleteObjectCommand(deleteParams);
+      await s3Client.send(command);
 
       return {
         success: true,
@@ -139,11 +142,12 @@ class ImageService {
         Prefix: `${userId}/`
       };
 
-      const result = await s3.listObjectsV2(listParams).promise();
+      const command = new ListObjectsV2Command(listParams);
+      const result = await s3Client.send(command);
 
       return {
         success: true,
-        images: result.Contents.map(file => ({
+        images: (result.Contents || []).map(file => ({
           name: file.Key.split('/').pop(),
           size: file.Size,
           lastModified: file.LastModified,
